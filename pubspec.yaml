@@ -1,0 +1,55 @@
+name: cinemate
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # State Management
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.5
+  # Networking
+  dio: ^5.3.3
+  # Firebase
+  firebase_core: ^4.6.0
+  firebase_auth: ^6.3.0
+  # Navigation
+  go_router: ^17.2.0
+  # UI
+  cached_network_image: ^3.3.0
+  shimmer: ^3.0.0
+  # Utilities
+  flutter_dotenv: ^6.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/icon/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/cinemate_icon.png"
+  macos:
+    generate: true
+    image_path: "assets/icon/cinemate_icon.png"
+  web:
+    generate: true
+    image_path: "assets/icon/cinemate_icon.png"
+    background_color: "#1A1A2E"
+    theme_color: "#E94560"
+  windows:
+    generate: true
+    image_path: "assets/icon/cinemate_icon.png"
+    icon_size: 48
