@@ -9,7 +9,6 @@ import '../../screens/auth/register_screen.dart';
 import '../../screens/main/main_screen.dart';
 import '../../screens/movie/movie_list_screen.dart';
 import '../../screens/movie/movie_detail_screen.dart';
-import '../../screens/profile/profile_screen.dart';
 
 class AppRouter {
     static final String splash      = '/';
@@ -64,10 +63,6 @@ class AppRouter {
                       final movie = state.extra as Map<String, dynamic>;
                       return MovieDetailScreen(movie: movie);
                     },
-                ),
-                GoRoute(
-                    path: profile,
-                    builder: (_, _) => const ProfileScreen(),
                 ),
             ],
         );

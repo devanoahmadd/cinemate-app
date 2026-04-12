@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 8),
                   Text('Masuk untuk melanjutkan',
                       style: TextStyle(
-                          color: Colors.white.withOpacity(0.6))),
+                          color: Colors.white.withValues(alpha: 0.6))),
                   const SizedBox(height: 40),
                   // Email
                   TextField(
