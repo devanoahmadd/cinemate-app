@@ -5,6 +5,7 @@ import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../bloc/auth_bloc/auth_event.dart';
 import '../../bloc/auth_bloc/auth_state.dart';
 import '../../core/routes/app_router.dart';
+import '../../core/theme/theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailCtrl    = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _obscure = true;
@@ -26,140 +28,159 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login() {
+    if (_formKey.currentState!.validate()) {
     context.read<AuthBloc>().add(AuthLoginRequested(
-      email: _emailCtrl.text.trim(), 
-      password: _passwordCtrl.text.trim()
+      email: _emailCtrl.text.trim(),
+      password: _passwordCtrl.text.trim(),
     ));
+  }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.background,
+      resizeToAvoidBottomInset: true,
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthAuthenticated) {
-            context.go(AppRouter.home);
-          }
+          if (state is AuthAuthenticated) context.go(AppRouter.home);
           if (state is AuthFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message),
-                  backgroundColor: Colors.red),
-            );
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(state.message),
+              backgroundColor: AppColors.error,
+            ));
           }
         },
         builder: (context, state) {
           return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
+            child: SingleChildScrollView(
+              padding: AppSpacing.authPad,
+              child: Form(
+                key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 48),
+                  const SizedBox(height: AppSpacing.xl),
+
+                  // App logo
                   Image.asset(
                     'assets/icon/cinemate_icon.png',
-                    width: 112,
-                    height: 112,
+                    width: AppSpacing.authLogoSize,
+                    height: AppSpacing.authLogoSize,
                   ),
-                  const SizedBox(height: 24),
-                  const Text('Selamat Datang',
-                      style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white)),
-                  const SizedBox(height: 8),
-                  Text('Masuk untuk melanjutkan',
-                      style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.6))),
-                  const SizedBox(height: 40),
-                  // Email
-                  TextField(
+                  const SizedBox(height: AppSpacing.xl),
+
+                  // Title & subtitle
+                  Text('Welcome Back', style: AppTypography.heading1),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text('Sign in to continue', style: AppTypography.greetingSub),
+                  const SizedBox(height: AppSpacing.xxl),
+
+                  // Email — borders & fill from global InputDecorationTheme
+                  TextFormField(
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: _inputDecoration('Email', Icons.email_outlined),
+                    style: AppTypography.body1.copyWith(color: AppColors.textPrimary),
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.email_outlined),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Email is required.";
+                      }
+                      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                      if (!emailRegex.hasMatch(value)) {
+                        return "Please enter a valid email address.";
+                      }
+                      return null;
+                    },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
+
                   // Password
-                  TextField(
+                  TextFormField(
                     controller: _passwordCtrl,
                     obscureText: _obscure,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: _inputDecoration(
-                      'Password',
-                      Icons.lock_outline,
-                    ).copyWith(
+                    style: AppTypography.body1.copyWith(color: AppColors.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscure ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.white54,
+                          color: AppColors.textDisabled,
                         ),
-                        onPressed: () =>
-                            setState(() => _obscure = !_obscure),
+                        onPressed: () => setState(() => _obscure = !_obscure),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Password is required.";
+                      }
+                      if (value.length < 6) {
+                        return "Password must be at least 6 characters.";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: AppSpacing.xs4),
+
+                  // Forgot password
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Forgot Password?',
+                        style: AppTypography.link.copyWith(
+                          color: AppColors.textTertiary,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  // Login Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed:
-                          state is AuthLoading ? null : _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE94560),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: state is AuthLoading
-                          ? const CircularProgressIndicator(
-                              color: Colors.white)
-                          : const Text('Masuk',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                    ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Login button — shape/size/color from global ElevatedButtonTheme
+                  ElevatedButton(
+                    onPressed: state is AuthLoading ? null : _login,
+                    child: state is AuthLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: AppColors.textPrimary,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text('Sign In', style: AppTypography.button),
                   ),
-                  const SizedBox(height: 16),
-                  // Register Link
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Register link
                   Center(
                     child: TextButton(
                       onPressed: () => context.go(AppRouter.register),
-                      child: const Text.rich(TextSpan(children: [
+                      child: Text.rich(TextSpan(children: [
                         TextSpan(
-                            text: 'Belum punya akun? ',
-                            style: TextStyle(color: Colors.white54)),
+                          text: "Don't have an account? ",
+                          style: AppTypography.body2.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
                         TextSpan(
-                            text: 'Daftar',
-                            style: TextStyle(
-                                color: Color(0xFFE94560),
-                                fontWeight: FontWeight.bold)),
+                          text: 'Sign up',
+                          style: AppTypography.link,
+                        ),
                       ])),
                     ),
                   ),
                 ],
               ),
             ),
-          );
+          ),
+        );
         },
-      ),
-    );
-  }
-
-  InputDecoration _inputDecoration(String label, IconData icon) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: const TextStyle(color: Colors.white54),
-      prefixIcon: Icon(icon, color: Colors.white54),
-      filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.05),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: 
-            const BorderSide(color: Color(0xFFE94560)),
       ),
     );
   }

@@ -43,4 +43,12 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+    <!-- Required by url_launcher to open https links and YouTube on Android API 30+ -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <package android:name="com.google.android.youtube" />
+    </queries>
 </manifest>

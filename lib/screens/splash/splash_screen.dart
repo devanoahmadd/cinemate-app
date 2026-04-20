@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../bloc/auth_bloc/auth_state.dart';
 import '../../core/routes/app_router.dart';
+import '../../core/theme/theme.dart';
 import 'cinemate_logo_animation.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,7 +22,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigate() async {
-    // Animation duration 2400 ms + 1100 ms pause = 3500 ms total
     await Future.delayed(const Duration(milliseconds: 3500));
     if (!mounted) return;
     final authState = context.read<AuthBloc>().state;
@@ -35,28 +35,29 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.background,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const CinemateLogoAnimation(size: 160),
-            const SizedBox(height: 16),
-            const Text(
+            const SizedBox(height: AppSpacing.md),
+
+            // App name — larger display style
+            Text(
               'Cinemate',
-              style: TextStyle(
+              style: AppTypography.heading1.copyWith(
                 fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
                 letterSpacing: 2,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
+
+            // Tagline
             Text(
               'Your Movie Companion',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withValues(alpha: 0.6),
+              style: AppTypography.body2.copyWith(
+                color: AppColors.textTertiary,
               ),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../data/models/movie_model.dart';
 import '../../data/models/genre_model.dart';
+import '../../data/models/movie_filter.dart';
 
 abstract class MovieState extends Equatable {
   @override
@@ -61,12 +62,40 @@ class MovieGenresLoaded extends MovieState {
   List<Object?> get props => [genres];
 }
 
-class MovieSearchLoaded extends MovieState {
+class MovieGenreLoaded extends MovieState {
   final List<MovieModel> movies;
-  MovieSearchLoaded(this.movies);
+  MovieGenreLoaded(this.movies);
 
   @override
   List<Object?> get props => [movies];
+}
+
+class MovieSearchLoaded extends MovieState {
+  final List<MovieModel> titleMovies;
+  final List<MovieModel> actorMovies;
+  final String? actorName;
+
+  MovieSearchLoaded({
+    this.titleMovies = const [],
+    this.actorMovies = const [],
+    this.actorName,
+  });
+
+  bool get hasTitle => titleMovies.isNotEmpty;
+  bool get hasActor => actorMovies.isNotEmpty && actorName != null;
+  bool get isEmpty  => titleMovies.isEmpty && actorMovies.isEmpty;
+
+  @override
+  List<Object?> get props => [titleMovies, actorMovies, actorName];
+}
+
+class MovieDiscoverLoaded extends MovieState {
+  final List<MovieModel> movies;
+  final MovieFilter filter;
+  MovieDiscoverLoaded(this.movies, this.filter);
+
+  @override
+  List<Object?> get props => [movies, filter];
 }
 
 class MovieError extends MovieState {
@@ -75,4 +104,25 @@ class MovieError extends MovieState {
 
   @override
   List<Object?> get props => [message];
+}
+
+/// State emitted by [MovieFetchListPage].
+/// Carries only the newly fetched page — [MovieListScreen] accumulates pages
+/// in its own local state, keeping the BLoC free of pagination concerns.
+///
+/// [hasMore] is false when the fetched page returned fewer than 20 results,
+/// indicating TMDB has no further pages for this query.
+class MovieListLoaded extends MovieState {
+  final List<MovieModel> movies; // this page's results only
+  final int page;
+  final bool hasMore;
+
+  MovieListLoaded({
+    required this.movies,
+    required this.page,
+    required this.hasMore,
+  });
+
+  @override
+  List<Object?> get props => [movies, page, hasMore];
 }

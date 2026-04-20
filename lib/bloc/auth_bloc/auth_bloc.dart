@@ -13,10 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLogoutRequested>(_onLogoutRequested);
   }
 
-  void _onCheckRequested(
-    AuthCheckRequested event,
-    Emitter<AuthState> emit,
-  ) {
+  void _onCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) {
     final user = _auth.currentUser;
     if (user != null) {
       emit(AuthAuthenticated(user));
@@ -32,7 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       final result = await _auth.signInWithEmailAndPassword(
-        email: event.email, 
+        email: event.email,
         password: event.password,
       );
       emit(AuthAuthenticated(result.user!));
@@ -68,17 +65,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   String _mapFirebaseAuthError(String code) {
     switch (code) {
       case 'user-not-found':
-        return 'Email tidak ditemukan';
       case 'wrong-password':
-        return 'Password salah';
+      case 'invalid-credential':
+        return "Invalid email or password. Please try again.";
       case 'email-already-in-use':
-        return 'Email sudah digunakan';
+        return "This email address is already in use.";
       case 'weak-password':
-        return 'Password terlalu lemah';
+        return "The password provided is too weak.";
       case 'invalid-email':
-        return 'Format email tidak valid';
+        return "Please enter a valid email address.";
+      case 'network-request-failed':
+        return "Network error. Please check your internet connection.";
       default:
-        return 'Terjadi kesalahan, coba lagi';
+        return "Something went wrong, try again.";
     }
   }
 }

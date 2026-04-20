@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/theme.dart';
 import 'tabs/home_tab.dart';
 import 'tabs/search_tab.dart';
 import 'tabs/profile_tab.dart';
@@ -13,7 +14,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  // Gunakan IndexedStack agar state tiap tab tidak hilang saat switch
+  // IndexedStack preserves each tab's scroll position and state on switch
   final List<Widget> _tabs = const [
     HomeTab(),
     SearchTab(),
@@ -23,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.background,
       body: IndexedStack(
         index: _currentIndex,
         children: _tabs,
@@ -35,24 +36,15 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildBottomNav() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF12122A),
+        color: AppColors.surface,
         border: Border(
-          top: BorderSide(
-            color: Colors.white.withValues(alpha: 0.08),
-            width: 1,
-          ),
+          top: BorderSide(color: AppColors.divider, width: 1),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
+        boxShadow: AppShadows.bottomNav,
       ),
       child: SafeArea(
         child: SizedBox(
-          height: 60,
+          height: AppSpacing.bottomNavHeight,
           child: Row(
             children: [
               _NavItem(
@@ -108,30 +100,26 @@ class _NavItem extends StatelessWidget {
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.xs4,
+                ),
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? const Color(0xFFE94560).withValues(alpha: 0.15)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
+                  color: isActive ? AppColors.primaryMuted : Colors.transparent,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                 ),
                 child: Icon(
                   icon,
                   size: 24,
-                  color: isActive
-                      ? const Color(0xFFE94560)
-                      : Colors.white.withValues(alpha: 0.35),
+                  color: isActive ? AppColors.primary : AppColors.textDisabled,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 10,
+                style: AppTypography.navLabel.copyWith(
+                  color: isActive ? AppColors.primary : AppColors.textDisabled,
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                  color: isActive
-                      ? const Color(0xFFE94560)
-                      : Colors.white.withValues(alpha: 0.35),
                 ),
               ),
             ],

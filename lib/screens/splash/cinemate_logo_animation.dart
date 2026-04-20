@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Animated Cinemate logo.
 ///
@@ -95,9 +96,6 @@ class _CinemateLogoPainter extends CustomPainter {
     required this.arcC,
   });
 
-  static const _kAccent = Color(0xFFE94560);
-  static const _kBg     = Color(0xFF1A1A2E);
-
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
@@ -110,61 +108,67 @@ class _CinemateLogoPainter extends CustomPainter {
         center,
         40.0 * s * t,
         Paint()
-          ..color = Colors.white.withValues(alpha: 0.18 * t)
+          ..color = AppColors.textPrimary.withValues(alpha: 0.18 * t)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.8 * s,
       );
     }
 
     // ── 2. Arc C ──────────────────────────────────────────────────
-    // Opens to the right: starts at 45° (SE), sweeps 270° clockwise → ends at 315° (NE).
+    // Opens to the right: starts at 40°, sweeps 280° clockwise.
     if (arcC > 0) {
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: 55.0 * s),
-        40 * pi / 180,            // startAngle  = 40°  → gap simetris di kanan (320°–40°)
-        (280 * pi / 180) * arcC,  // sweepAngle  = 0 → 280°
+        40 * pi / 180,
+        (280 * pi / 180) * arcC,
         false,
         Paint()
-          ..color = _kAccent
+          ..color = AppColors.primary
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 10 * s
+          ..strokeWidth = 13 * s
           ..strokeCap = StrokeCap.round,
       );
     }
 
     // ── 3. Arms (reel spokes) ──────────────────────────────────────
-    final armLen   = 26.0 * s;
-    final tipR     = 4.8  * s;
-    final armPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.8 * s
-      ..strokeCap = StrokeCap.round;
+    final armLen = 26.0 * s;
+    final tipR   = 4.8  * s;
 
-    // Right arm → slides right
+    // Right arm → slides right, primary at 70%
     if (armR > 0) {
       final tip = Offset(center.dx + armLen * armR, center.dy);
-      canvas.drawLine(center, tip, armPaint);
+      canvas.drawLine(
+        center, tip,
+        Paint()
+          ..color = AppColors.primary.withValues(alpha: 0.50)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2.8 * s
+          ..strokeCap = StrokeCap.round,
+      );
       canvas.drawCircle(
         tip, tipR * armR,
-        Paint()..color = _kAccent..style = PaintingStyle.fill,
+        Paint()
+          ..color = AppColors.primary
+          ..style = PaintingStyle.fill,
       );
     }
 
-    // Left arm → slides left (delayed 0.08 of total), 50% opacity — shadow feel
+    // Left arm → slides left, primary at 35% (shadow / depth feel)
     if (armL > 0) {
       final tip = Offset(center.dx - armLen * armL, center.dy);
       canvas.drawLine(
         center, tip,
         Paint()
-          ..color = Colors.white.withValues(alpha: 0.5)
+          ..color = AppColors.primary.withValues(alpha: 0.35)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.8 * s
           ..strokeCap = StrokeCap.round,
       );
       canvas.drawCircle(
         tip, tipR * armL,
-        Paint()..color = _kAccent.withValues(alpha: 0.5)..style = PaintingStyle.fill,
+        Paint()
+          ..color = AppColors.primary.withValues(alpha: 0.50)
+          ..style = PaintingStyle.fill,
       );
     }
 
@@ -174,13 +178,13 @@ class _CinemateLogoPainter extends CustomPainter {
       final r = max(0.0, 9.0 * s * dot);
       canvas.drawCircle(
         center, r,
-        Paint()..color = _kAccent..style = PaintingStyle.fill,
+        Paint()..color = AppColors.primary..style = PaintingStyle.fill,
       );
       // Inner dark hole gives the hub-of-reel feel
       if (dot > 0.4) {
         canvas.drawCircle(
           center, r * 0.42,
-          Paint()..color = _kBg..style = PaintingStyle.fill,
+          Paint()..color = AppColors.background..style = PaintingStyle.fill,
         );
       }
     }
